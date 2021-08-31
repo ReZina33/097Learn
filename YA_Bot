@@ -1,33 +1,60 @@
 // ==UserScript==
-// @name YandexBot
+// @name         YA_bot_31.08
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  Bon_2
-// @author      JuliNatsevich
-// @match        https://yandex.ru/*
- //@match        https://ya.ru/*
-// @grant        none
+// @description  try to take over the world!
+// @author       Juli_Natsevich
+// @match        https://yandex.ru/*
+//@match        https://ya.ru/*
+//@match        https://xn----7sbab5aqcbiddtdj1e1g.xn--p1ai/*
+// @grant        none
 // ==/UserScript==
 
 
-let keywords = ['как звучит кларнет', 'как звучит флейта'],
+let keywords = ['как звучит флейта', 'как звучит кларнет', 'как звучит абракадабра'],
     keyword = keywords[getRandom(0, keywords.length)],
     links = document.links,
-    btn = document.querySelector('.button_theme_search');
-
-
-document.getElementsByName('text')[0].value = keyword;
+    btn = document.querySelector('.button_theme_search'),
+    yandexInput = document.getElementsByName('text')[0];
 
 
 if(btn !== null && btn !== undefined){
-    btn.click();
+    let i =0;
+    let timerId = setInterval(()=>{ //
+        yandexInput.value += keyword[i];
+        i++;
+        if (i == keyword.length) {
+            clearInterval(timerId);
+            btn.click();
+        }
+    },500);
+
+}else if(location.hostname =='xn----7sbab5aqcbiddtdj1e1g.xn--p1ai'){
+    setInterval(()=>{
+        let index = getRandom(0, links.length);
+        if(getRandom(0,101) >= 80) {
+            location.href = 'https://www.yandex.ru';
+        }
+        if (links[index].href.indexOf('xn----7sbab5aqcbiddtdj1e1g.xn--p1ai') !== -1)
+            links[index].click();}, getRandom(1000, 5000));
+
 } else{
+    let nextYandexPage = true;
     for(let i =0; i<links.length; i++){
         if (links[i].href.includes('xn----7sbab5aqcbiddtdj1e1g.xn--p1ai')){
             let link = links[i];
-            link.click();
+            nextYandexPage = false;
+            setTimeout(()=>{link.click();},getRandom(3000,7000));
+            console.log("Нашел строку" + links[i]);
             break;
         }
+    }
+    if (document.querySelector('[aria-label="Текущая страница 5"]')){
+        nextYandexPage = false;
+        location.href = 'https://www.yandex.ru';
+    }
+    if (nextYandexPage) {
+        setTimeout(()=>{document.querySelector('[aria-label="Следующая страница"]').click();},getRandom(2000,6000));
     }
 }
 
