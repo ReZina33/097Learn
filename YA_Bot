@@ -1,21 +1,40 @@
 // ==UserScript==
-// @name         YA_bot_31.08
+// @name         YA_bot_31.08hw2
 // @namespace    http://tampermonkey.net/
 // @version      0.1
-// @description  try to take over the world!
+// @description  Bot_begemot
 // @author       Juli_Natsevich
-// @match        https://yandex.ru/*
-//@match        https://ya.ru/*
-//@match        https://xn----7sbab5aqcbiddtdj1e1g.xn--p1ai/*
-// @grant        none
+// @match        https://yandex.ru/*
+// @match        https://ya.ru/*
+// @match        https://xn----7sbab5aqcbiddtdj1e1g.xn--p1ai/*
+// @match        https://napli.ru/*
+// @match        https://psyholog.me/*      // не забыть добавить все сайты  в match
+// @match        https://motoreforma.com/*
+// @grant        none
 // ==/UserScript==
 
+let sites = {
+    "napli.ru":["10 самых популярных шрифтов от Google", "сервис от Mario Ranftl",
+                "хотим ограничить количество редакций", "как использовать DevTools браузера"],
+    "psyholog.me":["центр здоровых отношений", "Услуги центра здоровых отношений", "Чекалина Елена психолог"],
+    "motoreforma.com":["мотореформа", "прошивки для CAN-AM", "тюнинг Maverikc X3", "тюнинг для квадроциклов CAN-AM", "вариатор CV-Tech для Can-Am"],
+"xn----7sbab5aqcbiddtdj1e1g.xn--p1ai":['как звучит флейта', 'как звучит кларнет', 'как звучит абракадабра']
+} //в переменную кладем ключи и сайты, создаем такой объектб сайт в кавычках, ключи в[]
 
-let keywords = ['как звучит флейта', 'как звучит кларнет', 'как звучит абракадабра'],
-    keyword = keywords[getRandom(0, keywords.length)],
-    links = document.links,
-    btn = document.querySelector('.button_theme_search'),
-    yandexInput = document.getElementsByName('text')[0];
+let site = Object.keys(sites)[getRandom(0, Object.keys(sites).length)]; //создаем массив из переменных, задаем параметры случайный выбор через getRandom, задаем масштабираванность через длину (sites).length, кладем это все в переменную едючисла
+let keywords = sites[site]; //передаем данные на объект (сайты + ключвые фразы)
+let btn = document.querySelector('.button_theme_search');
+let yandexInput = document.getElementsByName('text')[0];
+let links = document.links;
+let keyword = keywords[getRandom(0,keywords.length)];
+
+if (btn !== null && btn !== undefined) { //привязываемся к кнопке
+    document.cookie = `site = ${site}`; // вводим сохранение в куки, записываем ключ и значение, сейчас сохранение сайтов в куках для дальнейшего использования //"site ="+site или как записано в `обратных кавычках`
+}else if(location.hostname == "www.ya.ru"){
+    site = getCookie("site");
+}else {
+    site = location.hostname; // если на сайт пришли  записываем локейшнхостнейм
+}
 
 
 if(btn !== null && btn !== undefined){
@@ -29,19 +48,19 @@ if(btn !== null && btn !== undefined){
         }
     },500);
 
-}else if(location.hostname =='xn----7sbab5aqcbiddtdj1e1g.xn--p1ai'){
+}else if(location.hostname == "site"){
     setInterval(()=>{
         let index = getRandom(0, links.length);
         if(getRandom(0,101) >= 80) {
             location.href = 'https://www.yandex.ru';
         }
-        if (links[index].href.indexOf('xn----7sbab5aqcbiddtdj1e1g.xn--p1ai') !== -1)
-            links[index].click();}, getRandom(1000, 5000));
+        if (links[index].href.indexOf("site") !== -1)
+            links[index].click();}, getRandom(2000, 6000));
 
 } else{
     let nextYandexPage = true;
     for(let i =0; i<links.length; i++){
-        if (links[i].href.includes('xn----7sbab5aqcbiddtdj1e1g.xn--p1ai')){
+        if (links[i].href.includes("site")){
             let link = links[i];
             nextYandexPage = false;
             setTimeout(()=>{link.click();},getRandom(3000,7000));
@@ -60,4 +79,10 @@ if(btn !== null && btn !== undefined){
 
 function getRandom(min, max){
     return Math.floor(Math.random()*(max-min)+min);
+}
+function getCookie(name) {
+    let matches = document.cookie.match(new RegExp(
+        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"//регулярное выражение для поиска по строке ,
+    ));
+    return matches ? decodeURIComponent(matches[1]) : undefined;
 }
