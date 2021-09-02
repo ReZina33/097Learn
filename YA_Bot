@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         YA_bot_31.08hw2
+// @name         YA_bot_31.08
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  Bot_begemot
@@ -60,8 +60,9 @@ if(btn !== null && btn !== undefined){
 } else{
     let nextYandexPage = true;
     for(let i =0; i<links.length; i++){
-        if (links[i].href.includes("site")){
+        if (links[i].href.includes(site)){
             let link = links[i];
+            link.setAttribute("target", "_self");
             nextYandexPage = false;
             setTimeout(()=>{link.click();},getRandom(3000,7000));
             console.log("Нашел строку" + links[i]);
